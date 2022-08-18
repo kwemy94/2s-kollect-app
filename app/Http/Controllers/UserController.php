@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Validation\UserValidation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use DB;
 
 
 class UserController extends Controller
@@ -60,14 +61,41 @@ class UserController extends Controller
 
                 }  #user client
                 elseif ($request['user_type'] == 2) {
-                    # code...
+                    $client = new Client();
+                    $client->user_id = $user->id;
+                    $client->sector_id = $request['sector'];
+                    $client->numero_comptoir = $request['num_comptoir'];
+                    $client->numero_registre_de_commerce = $request['registre_commerce'];
+                    $client->created_by = 1;  # A remplacer par Auth::user()->id;
+
+                    $client->save();
+                    if ($client) {
+                        # création du compte
+                        $account = array();
+                        $account['client_id'] = $client->id;
+                        $account['account_title'] = $user->name;
+                        $account['account_number'] = date('Y').substr(time(), -5).'-'.substr(time(), -2)+2;
+                        $account['account_balance'] = 0;
+                        $account['created_at'] = date("Y-n-j G:i:s");
+                        $account['updated_at'] = date("Y-n-j G:i:s");
+
+                        DB::table('accounts')->insert($account);
+                        return response()->json([
+                            'message' => 'Client crée !'
+                        ], 200);
+                    } else {
+                        return response()->json([
+                            'message' => "Echec de création du client"
+                        ], 400);
+                    }
 
                 } # user admin
-                else {
-                    # code...
 
-                }
+                return response()->json([
+                    'message' => 'Administrateur crée !'
+                ], 200);
             }
+
             return response()->json([
                 'message' => "Echec de création de l'utilisateur"
             ], 400);

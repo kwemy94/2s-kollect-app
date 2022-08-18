@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOperationsTable extends Migration
+class CreateAccountsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateOperationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('operations', function (Blueprint $table) {
+        Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('collector_id');
-            $table->String('type');
-            $table->double('amount');
-            $table->foreign(['collector_id'], 'FK_collector_id')->references(['id'])->on('collectors');
+            $table->unsignedBigInteger('client_id');
+            $table->string('account_title');
+            $table->string('account_number');
+            $table->string('account_balance');
+            $table->foreign('client_id')->references('id')->on('clients');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ class CreateOperationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('operations');
+        Schema::dropIfExists('accounts');
     }
 }

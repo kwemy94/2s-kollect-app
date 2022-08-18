@@ -12,7 +12,7 @@ class Operation extends Model
     protected $guarded = ['id'];
 
     public function accounts(){
-        return $this->hasMany(Account::class);
+        return $this->belongsTo(Account::class);
     }
 
     public function collector(){

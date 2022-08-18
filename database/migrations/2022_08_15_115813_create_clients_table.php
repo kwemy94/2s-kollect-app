@@ -17,8 +17,8 @@ class CreateClientsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('sector_id');
-            $table->string('username');
-            $table->string('location');
+            $table->string('numero_comptoir',10);
+            $table->string('numero_registre_de_commerce',30);
             $table->integer('created_by');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('sector_id')->references('id')->on('sectors');

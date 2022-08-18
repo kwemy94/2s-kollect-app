@@ -20,7 +20,7 @@ class Account extends Model
     }
 
     public function operation(){
-        return $this->belongsTo(Operation::class);
+        return $this->hasMany(Operation::class);
     }
 
 
