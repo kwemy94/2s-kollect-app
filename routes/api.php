@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\SectorController;
 use App\Http\Controllers\Api\OperationController;
+use App\Http\Controllers\Api\ClientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +29,12 @@ Route::get('/sector', [SectorController::class, 'index']);
 Route::post('/sector-store', [SectorController::class, 'store']);
 
 Route::post('/operation-store', [OperationController::class, 'store']);
+
+//delete a specific client
+Route::get('/client/delete/{id}', [ClientController::class, 'delete']);
+//restore a specific client deleted
+Route::get('/client/restore/{id}', [ClientController::class, 'restore']);
+//restore all clients partiellement deleted
+Route::get('/client/restore_all', [ClientController::class, 'restoreAll']);
+//delete definitively a client in database
+Route::get('/client/destroy/{id}', [ClientController::class, 'completelyDelete']);

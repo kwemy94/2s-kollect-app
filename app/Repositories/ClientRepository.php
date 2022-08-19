@@ -12,4 +12,20 @@ class ClientRepository extends ResourceRepository {
     public function __construct(Client $client) {
         $this->model = $client;
     }
+
+    public function restore($id){
+        
+        return $this->model->withTrashed()->find($id)->restore();
+    }
+
+    public function restoreAll(){
+        
+        return $this->model->onlyTrashed()->restore();
+    }
+
+    public function completelyDelete($id){
+
+        return $this->model->find($id)->forceDelete();
+    }
+
 }
