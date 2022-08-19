@@ -85,7 +85,7 @@ class UserController extends Controller
                         ], 200);
                     } else {
                         return response()->json([
-                            'message' => "Echec de création du client"
+                            'errors' => "Echec de création du client"
                         ], 400);
                     }
 
@@ -97,7 +97,7 @@ class UserController extends Controller
             }
 
             return response()->json([
-                'message' => "Echec de création de l'utilisateur"
+                'errors' => "Echec de création de l'utilisateur"
             ], 400);
         }
     }
