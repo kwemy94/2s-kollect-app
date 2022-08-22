@@ -35,14 +35,9 @@ class UserController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         } else {
 
-            $request->password = Hash::make($request->password);
-            $inputs [] = $request->all();
+            $request['password'] = Hash::make($request->password);
             
-            foreach ($inputs as $input ) {
-                $input['password'] = Hash::make($request->password);
-            }
-
-            $user = $this->userRepository->store($input);
+            $user = $this->userRepository->store($request->all());
 
             if ($user ) {
                 #user collector
