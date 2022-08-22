@@ -36,4 +36,28 @@ class SectorController extends Controller
         }
 
     }
+
+    public function update(Request $request,$id,SectorValidation $sectorValidation){
+        $validator = Validator::make($request->all(), $sectorValidation->rules(), $sectorValidation->message());
+
+        $inputs = $request->all();
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        } else {
+            if($inputs){
+
+                $this->sectorRepository->update($id,$inputs);
+                return response()->json([
+                    'message' =>"Secteur mis à jour",
+                ], 200);
+            }
+          else{
+            return response()->json([
+                'message' =>"Echec de mise à jour du secteur",
+            ], 402);
+          }
+        }
+
+    }
 }

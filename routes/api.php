@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ClientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -24,11 +25,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/client', [UserController::class, 'index']);
 Route::post('/client-store', [UserController::class, 'store']);
+Route::post('/client-update-{id}',[UserController::class, 'update']);
 
 Route::get('/sector', [SectorController::class, 'index']);
 Route::post('/sector-store', [SectorController::class, 'store']);
+Route::post('/sector-update-{id}', [SectorController::class, 'update']);
 
 Route::post('/operation-store', [OperationController::class, 'store']);
+
 
 //delete a specific client
 Route::get('/client/delete/{id}', [ClientController::class, 'delete']);
@@ -38,3 +42,5 @@ Route::get('/client/restore/{id}', [ClientController::class, 'restore']);
 Route::get('/client/restore_all', [ClientController::class, 'restoreAll']);
 //delete definitively a client in database
 Route::get('/client/destroy/{id}', [ClientController::class, 'completelyDelete']);
+
+//Update Route
