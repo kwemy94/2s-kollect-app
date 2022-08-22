@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\SectorController;
 use App\Http\Controllers\Api\OperationController;
-use App\Http\Controllers\Api\ClientController;
+// use App\Http\Controllers\Api\ClientController;
 
 /*
 |--------------------------------------------------------------------------
