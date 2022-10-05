@@ -8,20 +8,20 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
+use App\Models\Collector;
 
-class UserRepository extends ResourceRepository {
+class CollectorRepository extends ResourceRepository {
 
     /**
-     * @param User $user
+     * @param Collector $collector
      */
-    public function __construct(User $user) {
+    public function __construct(Collector $user) {
         $this->model = $user;
     }
 
     public function getCollectors() {
         return $this->model
-            ->with('collectors')
-            ->Paginate(2);
+            ->with('user')
+            ->Paginate(15);
     }
 }

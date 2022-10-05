@@ -12,4 +12,10 @@ class SectorRepository extends ResourceRepository {
     public function __construct(Sector $sector) {
         $this->model = $sector;
     }
+
+    public function getAll(){
+        return $this->model
+            ->orderBy('id', 'DESC')    
+            ->get();
+    }
 }

@@ -49,10 +49,10 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function logout()
-    {
+    { 
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'Vous êtes hors connexion maintenant !']);
     }
 
     /**
@@ -78,7 +78,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'email' => auth()->user()->email,
+            'user' => auth()->user(),
         ]);
     }
 }

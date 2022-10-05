@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Repositories\SectorRepository;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
-use App\Http\Validation\SectorValidation;
 
+use App\Repositories\SectorRepository;
+use App\Http\Validation\SectorValidation;
 use Illuminate\Support\Facades\Validator;
 
 class SectorController extends Controller
@@ -18,11 +19,12 @@ class SectorController extends Controller
     }
 
     public function index(){
-        return response()->json([$this->sectorRepository->getPaginate(10)], 200);
+        return response()->json(['secteurs' => $this->sectorRepository->getAll()], 200);
     }
 
 
     public function store(Request $request, SectorValidation $sectorValidation) {
+        // return response()->json(JWTAuth::user());
 
         $validator = Validator::make($request->all(), $sectorValidation->rules(), $sectorValidation->message());
 
@@ -32,6 +34,7 @@ class SectorController extends Controller
             $this->sectorRepository->store($request->all());
             return response()->json([
                 'message' =>"Secteur créer",
+                'secteurs' => $this->sectorRepository->getAll()
             ], 200);
         }
 
@@ -50,6 +53,7 @@ class SectorController extends Controller
                 $this->sectorRepository->update($id,$inputs);
                 return response()->json([
                     'message' =>"Secteur mis à jour",
+                    'secteurs' => $this->sectorRepository->getAll(),
                 ], 200);
             }
           else{

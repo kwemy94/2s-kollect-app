@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Repositories\ClientRepository;
 use App\Http\Controllers\Controller;
+use App\Repositories\UserRepository;
+use App\Repositories\ClientRepository;
 
 class ClientController extends Controller
 {
     private $clientRepository;
+    private $userRepository;
 
-    public function __construct(ClientRepository $clientRepository){
+    public function __construct(ClientRepository $clientRepository, UserRepository $userRepository){
         
         $this->clientRepository = $clientRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function delete($id){

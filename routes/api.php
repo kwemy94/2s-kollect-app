@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\Api\ClientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\Api\SectorController;
-use App\Http\Controllers\Api\OperationController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\SectorController;
+use App\Http\Controllers\Api\CollectorController;
+use App\Http\Controllers\Api\OperationController;
 // use App\Http\Controllers\Api\ClientController;
 
 /*
@@ -28,9 +29,9 @@ Route::get('/client', [UserController::class, 'index']);
 Route::post('/client-store', [UserController::class, 'store']);
 Route::post('/client-update-{id}',[UserController::class, 'update']);
 
-Route::get('/sector', [SectorController::class, 'index']);
-Route::post('/sector-store', [SectorController::class, 'store']);
-Route::post('/sector-update-{id}', [SectorController::class, 'update']);
+// Route::get('/sector', [SectorController::class, 'index']);
+// Route::post('/sector-store', [SectorController::class, 'store']);
+// Route::post('/sector-update-{id}', [SectorController::class, 'update']);
 
 Route::post('/operation-store', [OperationController::class, 'store']);
 
@@ -48,6 +49,12 @@ Route::group([
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
+
+    Route::get('/sector', [SectorController::class, 'index']);
+    Route::post('/sector-store', [SectorController::class, 'store']);
+    Route::post('/sector-update-{id}', [SectorController::class, 'update']);
+
+    Route::post('/collectors', [CollectorController::class, 'index']);
 
 });
 
