@@ -13,6 +13,10 @@ class ClientRepository extends ResourceRepository {
         $this->model = $client;
     }
 
+    public function getAll() {
+        return $this->model->with('user', 'sector', 'accounts')->orderBy('id', 'DESC')->get();
+    }
+
     public function restore($id){
         
         return $this->model->withTrashed()->find($id)->restore();

@@ -26,7 +26,7 @@ use App\Http\Controllers\Api\OperationController;
 // });
 
 Route::get('/client', [UserController::class, 'index']);
-Route::post('/client-store', [UserController::class, 'store']);
+// Route::post('/client-store', [UserController::class, 'store']);
 Route::post('/client-update-{id}',[UserController::class, 'update']);
 
 // Route::get('/sector', [SectorController::class, 'index']);
@@ -55,6 +55,13 @@ Route::group([
     Route::post('/sector-update-{id}', [SectorController::class, 'update']);
 
     Route::post('/collectors', [CollectorController::class, 'index']);
+
+    # user store
+    Route::post('/user-store', [UserController::class, 'store']);
+
+
+    # client zone
+    Route::post('/client', [ClientController::class, 'index']);
 
 });
 

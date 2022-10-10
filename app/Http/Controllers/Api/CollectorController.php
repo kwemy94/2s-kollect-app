@@ -21,6 +21,6 @@ class CollectorController extends Controller
     public function index(){
         $clients = $this->collectorRepository->getCollectors();
 
-        return response()->json([$clients]);
+        return response()->json(['collectors' => $clients], 200);
     }
 }

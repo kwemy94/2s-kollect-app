@@ -18,6 +18,11 @@ class ClientController extends Controller
         $this->userRepository = $userRepository;
     }
 
+    public function index() {
+        $clients = $this->clientRepository->getAll();
+        return response()->json(['clients' => $clients],200);
+    }
+
     public function delete($id){
 
         try{

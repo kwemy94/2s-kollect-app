@@ -2,25 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Repositories\UserRepository;
+use DB;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\Collector;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Validation\UserValidation;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use DB;
+use Illuminate\Http\Request;
+use App\Repositories\UserRepository;
+// use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Repositories\ClientRepository;
+use App\Http\Validation\UserValidation;
+use App\Repositories\CollectorRepository;
+use Illuminate\Support\Facades\Validator;
 
 
 class UserController extends Controller
 {
     private $userRepository;
+    private $collectorRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, CollectorRepository $collectorRepository, ClientRepository $clientRepository)
     {
         $this->userRepository = $userRepository;
+        $this->collectorRepository = $collectorRepository;
+        $this->clientRepository = $clientRepository;
     }
 
     public function index(){
@@ -51,33 +58,56 @@ class UserController extends Controller
                     $collector->sectors()->attach([$request['sector']]);
 
                     return response()->json([
-                        'message' => 'Collecteur crée !'
+                        'message' => 'Collecteur crée !',
+                        'collectors' => $this->collectorRepository->getCollectors(),
                     ], 200);
 
                 }  #user client
                 elseif ($request['user_type'] == 2) {
-                    $client = new Client();
-                    $client->user_id = $user->id;
-                    $client->sector_id = $request['sector'];
-                    $client->numero_comptoir = $request['num_comptoir'];
-                    $client->numero_registre_de_commerce = $request['registre_commerce'];
-                    $client->created_by = 1;  # A remplacer par Auth::user()->id;
+                    try {
+                        $client = new Client();
+                        $client->user_id = $user->id;
+                        $client->sector_id = $request['sector'];
+                        $client->numero_comptoir = $request['numero_comptoir'];
+                        $client->numero_registre_de_commerce = $request['numero_registre_de_commerce'];
+                        $client->created_by = Auth::user()->id;
 
-                    $client->save();
+                        $client->save();
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                        dd($th);
+                        return response()->json([
+                            'errors' => "erreur client",
+                            'dd1'=> $request['numero_registre_de_commerce'],
+                            'dd2'=> $request['numero_comptoir'],
+                            'dd3'=> $request['sector'],
+                            // 'dd4'=> Auth::user()->id,
+                        ], 400);
+                    }
                     if ($client) {
                         # création du compte
-                        $account = array();
-                        $account['client_id'] = $client->id;
-                        $account['account_title'] = $user->name;
-                        $account['account_number'] = date('Y').substr(time(), -5).'-'.substr(time(), -2)+2;
-                        $account['account_balance'] = 0;
-                        $account['created_at'] = date("Y-n-j G:i:s");
-                        $account['updated_at'] = date("Y-n-j G:i:s");
+                        try {
+                            $account = array();
+                            $account['client_id'] = $client->id;
+                            $account['account_title'] = $user->name;
+                            $account['account_number'] = date('Y').substr(time(), -5).'-'.substr(time(), -2)+2;
+                            $account['account_balance'] = 0;
+                            $account['created_at'] = date("Y-n-j G:i:s");
+                            $account['updated_at'] = date("Y-n-j G:i:s");
 
-                        DB::table('accounts')->insert($account);
-                        return response()->json([
-                            'message' => 'Client crée !'
-                        ], 200);
+                            DB::table('accounts')->insert($account);
+                            return response()->json([
+                                'message' => 'Client crée !',
+                                'clients' => $clients = $this->clientRepository->getAll(),
+                            ], 200);
+                        } catch (\Throwable $th) {
+                            //throw $th;
+                            return response()->json([
+                                'errors' => "erreur compte",
+                                'dd'=> $th,
+                            ], 400);
+                        }
+                        
                     } else {
                         return response()->json([
                             'errors' => "Echec de création du client"
