@@ -58,15 +58,18 @@ Route::group([
 
     # user store
     Route::post('/user-store', [UserController::class, 'store']);
+    Route::post('/user-update/{id}', [UserController::class, 'update']);
 
 
     # client zone
     Route::post('/client', [ClientController::class, 'index']);
+    Route::post('/client/delete/{id}', [ClientController::class, 'delete']);
+    Route::post('/client/update/{id}', [ClientController::class, 'update']);
 
 });
 
 //delete a specific client
-Route::get('/client/delete/{id}', [ClientController::class, 'delete']);
+// Route::get('/client/delete/{id}', [ClientController::class, 'delete']);
 //restore a specific client deleted
 Route::get('/client/restore/{id}', [ClientController::class, 'restore']);
 //restore all clients partiellement deleted

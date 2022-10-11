@@ -138,6 +138,8 @@ class UserController extends Controller
     }
 
     public function update(Request $request,UserValidation $userValidation,$id){
+
+        return response()->json(['result' => 'Fonctionnalité non disponible']);
         $validator = Validator::make($request->all(), $userValidation->rules(), $userValidation->message());
 
          if ($validator->fails()) {
