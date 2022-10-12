@@ -25,4 +25,8 @@ class CollectorRepository extends ResourceRepository {
             // ->Paginate(15);
             ->get();
     }
+
+    public function getCollector($id) {
+        return $this->model->with('user', 'sectors')->findOrFail($id);
+    }
 }

@@ -54,7 +54,9 @@ Route::group([
     Route::post('/sector-store', [SectorController::class, 'store']);
     Route::post('/sector-update-{id}', [SectorController::class, 'update']);
 
+    # Collector
     Route::post('/collectors', [CollectorController::class, 'index']);
+    Route::post('/collector/update/{id}', [CollectorController::class, 'update']);
 
     # user store
     Route::post('/user-store', [UserController::class, 'store']);

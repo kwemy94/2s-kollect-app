@@ -30,99 +30,37 @@ class ClientController extends Controller
 
     public function update(Request $request, $id){
 
-        // $client = Client::findOrFail($id);
-        $client = $this->clientRepository->getClient($id);
         
+        try {
+            $client = $this->clientRepository->getClient($id);
+        
+            $this->userRepository->update($client->user->id, $request->all());
 
-        $user = $this->userRepository->update($client->user->id, $request->all());
+            $this->clientRepository->update($client->id, $request->all());
 
-        // return response()->json($this->clientRepository->getClient($id));
+            // return response()->json($this->clientRepository->getClient($id));
 
-        $client = $this->clientRepository->update($client->id, $request->all());
+            $account = null;
+            foreach ($client->accounts as $compt ) {
+                $account = $compt;
+                break; # En supposant que l'utilisateur à 1 seul compte
+            }
 
-        $account = null;
-        foreach ($client->accounts as $compt ) {
-            $account = $compt;
-            break;
-        }
-        $account = $this->accountRepository->update($accounts->id, ['account_title'=> $user->name]);
-
-        return response()->json($this->clientRepository->getClient($id));
-
-        if ($user ) {
-            #user collector
-            if ($request['user_type'] == 1) {
-                $collector = new Collector();
-                $collector->user_id = $user->id;
-                $collector->registration_number = $this->generateUniqueNumber();
-
-                $collector->save();
-
-                $collector->sectors()->attach([$request['sector']]);
-
-                return response()->json([
-                    'message' => 'Collecteur crée !',
-                    'collectors' => $this->collectorRepository->getCollectors(),
-                ], 200);
-
-            }  #user client
-            elseif ($request['user_type'] == 2) {
-                try {
-                    $client = new Client();
-                    $client->user_id = $user->id;
-                    $client->sector_id = $request['sector'];
-                    $client->numero_comptoir = $request['numero_comptoir'];
-                    $client->numero_registre_de_commerce = $request['numero_registre_de_commerce'];
-                    $client->created_by = Auth::user()->id;
-
-                    $client->save();
-                } catch (\Throwable $th) {
-                    //throw $th;
-                    dd($th);
-                    return response()->json([
-                        'errors' => "erreur client",
-                        'dd1'=> $request['numero_registre_de_commerce'],
-                        'dd2'=> $request['numero_comptoir'],
-                        'dd3'=> $request['sector'],
-                        // 'dd4'=> Auth::user()->id,
-                    ], 400);
-                }
-                if ($client) {
-                    # création du compte
-                    try {
-                        $account = array();
-                        $account['client_id'] = $client->id;
-                        $account['account_title'] = $user->name;
-                        $account['account_number'] = date('Y').substr(time(), -5).'-'.substr(time(), -2)+2;
-                        $account['account_balance'] = 0;
-                        $account['created_at'] = date("Y-n-j G:i:s");
-                        $account['updated_at'] = date("Y-n-j G:i:s");
-
-                        DB::table('accounts')->insert($account);
-                        return response()->json([
-                            'message' => 'Client crée !',
-                            'clients' => $clients = $this->clientRepository->getAll(),
-                        ], 200);
-                    } catch (\Throwable $th) {
-                        //throw $th;
-                        return response()->json([
-                            'errors' => "erreur compte",
-                            'dd'=> $th,
-                        ], 400);
-                    }
-                    
-                } else {
-                    return response()->json([
-                        'errors' => "Echec de création du client"
-                    ], 400);
-                }
-
-            } # user admin
-
+            $this->accountRepository->update($account->id, ['account_title'=> $request->name]);
+        } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'Administrateur crée !'
-            ], 200);
+                'error' => true,
+                'message' => 'Oups! Echec de mise à jour des informations du client',
+            ], 402);
         }
+
+        return response()->json([
+            'error' => false,
+            'message' => 'Mise à jour effectuée !',
+            'clients'=> $this->clientRepository->getAll(),
+        ], 200);
+
+       
     }
 
 
