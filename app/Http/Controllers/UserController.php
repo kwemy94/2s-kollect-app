@@ -42,7 +42,7 @@ class UserController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         } else {
 
-            $request['password'] = Hash::make($request->password);
+            $request['password'] = Hash::make('2s@Kollect');
             
             $user = $this->userRepository->store($request->all());
 

@@ -36,4 +36,8 @@ class ClientRepository extends ResourceRepository {
         return $this->model->find($id)->forceDelete();
     }
 
+    public function getClientSector($sectorId) {
+        return $this->model->with('user', 'accounts')->where('sector_id', $sectorId)->get();
+    }
+
 }

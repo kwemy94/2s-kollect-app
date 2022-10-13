@@ -15,7 +15,12 @@ class SectorRepository extends ResourceRepository {
 
     public function getAll(){
         return $this->model
+            ->with('collectors', 'clients')
             ->orderBy('id', 'DESC')    
             ->get();
+    }
+
+    public function getSector($id) {
+        return $this->model->with('clients', 'collectors')->findOrFail($id);
     }
 }

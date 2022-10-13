@@ -50,9 +50,12 @@ Route::group([
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
 
+    # sector
     Route::get('/sector', [SectorController::class, 'index']);
     Route::post('/sector-store', [SectorController::class, 'store']);
     Route::post('/sector-update-{id}', [SectorController::class, 'update']);
+    Route::post('/sector/show/{id}', [SectorController::class, 'show']);
+    Route::post('/sector/delete/{id}', [SectorController::class, 'destroy']);
 
     # Collector
     Route::post('/collectors', [CollectorController::class, 'index']);

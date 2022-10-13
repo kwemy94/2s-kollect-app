@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 
+use App\Repositories\ClientRepository;
 use App\Repositories\SectorRepository;
 use App\Http\Validation\SectorValidation;
 use Illuminate\Support\Facades\Validator;
@@ -13,9 +14,11 @@ use Illuminate\Support\Facades\Validator;
 class SectorController extends Controller
 {
     private $sectorRepository;
+    private $clientRepository;
 
-    public function __construct(SectorRepository $sectorRepository){
+    public function __construct(SectorRepository $sectorRepository, ClientRepository $clientRepository){
         $this->sectorRepository = $sectorRepository;
+        $this->clientRepository = $clientRepository;
     }
 
     public function index(){
@@ -63,5 +66,41 @@ class SectorController extends Controller
           }
         }
 
+    }
+
+    public function show($id){
+        $sector = $this->sectorRepository->getSector($id);
+
+        if ($sector) {
+            return response()->json([
+                'secteur' => $sector,
+                'clients' => $this->clientRepository->getClientSector($id),
+                'error' => false,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Oups! Secteur introuvable',
+                'error' => true,
+            ], 200);
+        }
+        
+        
+    }
+
+    public function destroy($id) {
+        
+        try {
+            $this->sectorRepository->destroy($id);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['message' => 'Oups! Impossible de supprimer le secteur'],403);
+        }
+
+        return response()->json([
+            'secteurs' => $this->sectorRepository->getAll(),
+            'message' => "Suppression effectuée"
+        ],200);
+
+        
     }
 }
