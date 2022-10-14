@@ -29,4 +29,9 @@ class CollectorRepository extends ResourceRepository {
     public function getCollector($id) {
         return $this->model->with('user', 'sectors')->findOrFail($id);
     }
+
+
+    public function getCollectorByUserId($user_id) {
+        return $this->model->where('user_id', $user_id)->first();
+    }
 }

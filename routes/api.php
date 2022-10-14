@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\SectorController;
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\CollectorController;
 use App\Http\Controllers\Api\OperationController;
 // use App\Http\Controllers\Api\ClientController;
@@ -33,7 +34,7 @@ Route::post('/client-update-{id}',[UserController::class, 'update']);
 // Route::post('/sector-store', [SectorController::class, 'store']);
 // Route::post('/sector-update-{id}', [SectorController::class, 'update']);
 
-Route::post('/operation-store', [OperationController::class, 'store']);
+// Route::post('/operation-store', [OperationController::class, 'store']);
 
 
 
@@ -44,6 +45,11 @@ Route::group([
     'prefix' => 'auth'
 
 ], function ($router) {
+    #Operation
+    Route::post('/operation-store', [OperationController::class, 'store']);
+
+    # Account
+    Route::post('/account/historique/{id}', [AccountController::class, 'historique']);
 
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout']);

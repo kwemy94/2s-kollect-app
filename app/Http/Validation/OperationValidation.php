@@ -6,7 +6,7 @@ class OperationValidation {
     public function rules() {
       return   [
             'type' => 'required',   # 1 pour versement et -1 pour retrait
-            'amount' => 'required|',
+            'amount' => 'required|numeric',
             'account_id' => 'required|integer',
             'collector_id' => 'required|integer'
         ];
