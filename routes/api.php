@@ -47,6 +47,7 @@ Route::group([
 ], function ($router) {
     #Operation
     Route::post('/operation-store', [OperationController::class, 'store']);
+    Route::post('/operation', [OperationController::class, 'index']);
 
     # Account
     Route::post('/account/historique/{id}', [AccountController::class, 'historique']);

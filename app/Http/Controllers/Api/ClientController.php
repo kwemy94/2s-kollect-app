@@ -65,6 +65,7 @@ class ClientController extends Controller
 
 
     public function delete($id){
+        
 
         try{
             
@@ -112,7 +113,7 @@ class ClientController extends Controller
     }
 
     public function completelyDelete($id){
-        
+        return response()->json(Client::findOrFail($id));
         try{
             $this->clientRepository->completelyDelete();
             return response()->json(['succes'=>true, 'message'=>'suppression définitivie réussie'], 200);

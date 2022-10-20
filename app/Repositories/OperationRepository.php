@@ -12,4 +12,8 @@ class OperationRepository extends ResourceRepository {
     public function __construct(Operation $operation) {
         $this->model = $operation;
     }
+
+    public function getAll() {
+        return $this->model->with('accounts', 'collector')->get();
+    }
 }

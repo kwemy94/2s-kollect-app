@@ -6,6 +6,7 @@ use App\Http\Validation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\ClientRepository;
+use App\Repositories\SectorRepository;
 use App\Repositories\AccountRepository;
 use App\Repositories\CollectorRepository;
 use App\Repositories\OperationRepository;
@@ -17,13 +18,24 @@ class OperationController extends Controller
     private $operationRepository;
     private $accountRepository;
     private $collectorRepository;
+    private $sectorRepository;
 
     public function __construct(OperationRepository $operationRepository, 
-        AccountRepository $accountRepository, ClientRepository $clientRepository, CollectorRepository $collectorRepository) {
+        AccountRepository $accountRepository, ClientRepository $clientRepository, 
+        CollectorRepository $collectorRepository, SectorRepository $sectorRepository) {
         $this->operationRepository = $operationRepository;
         $this->accountRepository = $accountRepository;
         $this->clientRepository = $clientRepository;
         $this->collectorRepository = $collectorRepository;
+        $this->sectorRepository = $sectorRepository;
+    }
+
+    public function index() {
+        return response()->json([
+            'clients' => $this->clientRepository->getAll(),
+            'operations' => $this->operationRepository->getAll(),
+            'sectors' => $this->sectorRepository->getAll(),
+        ], 200);
     }
 
 
