@@ -37,7 +37,36 @@ class ClientRepository extends ResourceRepository {
     }
 
     public function getClientSector($sectorId) {
-        return $this->model->with('user', 'accounts')->where('sector_id', $sectorId)->get();
+        return $this->model->with('user', 'sector', 'accounts')->where('sector_id', $sectorId)->get();
+        // $user = $this->model->with('user', 'sector', 'accounts')->where('sector_id', $sectorId)->get();
+
+
+
+
+
+        // // $user = $this->userRepository->getByPhone($phone);
+        // if ($user->collectors) {
+        //     $collectorId = $user->collectors[0]->id;
+        // } else {
+        //     return response()->json([
+        //         'error' => true,
+        //         'message' => 'Oups! Collecteur non existant',
+        //     ], 400);
+        // }
+        // // return response()->json(['clients' => $collectorId],200);
+        // $collector = $this->collectorRepository->getCollector($collectorId);
+        
+        // if ($collector->sectors) {
+        //     $sector_id = $collector->sectors[0]->pivot->sector_id;
+        // } else {
+        //     return response()->json([
+        //         'error' => true,
+        //         'message' => 'Oups! Secteur non existant',
+        //     ], 400);
+        // }
+        
+        // $clients = $this->clientRepository->getClientSector($sector_id);
+        // return response()->json(['clients' => $clients],200);
     }
 
 }

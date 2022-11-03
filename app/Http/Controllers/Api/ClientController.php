@@ -8,22 +8,51 @@ use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\Repositories\ClientRepository;
 use App\Repositories\AccountRepository;
+use App\Repositories\CollectorRepository;
 
 class ClientController extends Controller
 {
     private $clientRepository;
     private $userRepository;
     private $accountRepository;
+    private $collectorRepository;
 
-    public function __construct(ClientRepository $clientRepository, UserRepository $userRepository, AccountRepository $accountRepository){
+    public function __construct(ClientRepository $clientRepository, CollectorRepository $collectorRepository, UserRepository $userRepository, AccountRepository $accountRepository){
         
         $this->clientRepository = $clientRepository;
         $this->userRepository = $userRepository;
         $this->accountRepository = $accountRepository;
+        $this->collectorRepository = $collectorRepository;
     }
 
     public function index() {
         $clients = $this->clientRepository->getAll();
+        return response()->json(['clients' => $clients],200);
+    }
+
+    public function clientParSecteur($phone) {
+        $user = $this->userRepository->getByPhone($phone);
+        if ($user->collectors) {
+            $collectorId = $user->collectors[0]->id;
+        } else {
+            return response()->json([
+                'error' => true,
+                'message' => 'Oups! Collecteur non existant',
+            ], 400);
+        }
+        // return response()->json(['clients' => $collectorId],200);
+        $collector = $this->collectorRepository->getCollector($collectorId);
+        
+        if ($collector->sectors) {
+            $sector_id = $collector->sectors[0]->pivot->sector_id;
+        } else {
+            return response()->json([
+                'error' => true,
+                'message' => 'Oups! Secteur non existant',
+            ], 400);
+        }
+        
+        $clients = $this->clientRepository->getClientSector($sector_id);
         return response()->json(['clients' => $clients],200);
     }
 

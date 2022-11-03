@@ -77,6 +77,7 @@ Route::group([
     Route::post('/client', [ClientController::class, 'index']);
     Route::post('/client/delete/{id}', [ClientController::class, 'delete']);
     Route::post('/client/update/{id}', [ClientController::class, 'update']);
+    Route::post('/client/par-secteur/{id_collector}', [ClientController::class, 'clientParSecteur']);
 
 });
 

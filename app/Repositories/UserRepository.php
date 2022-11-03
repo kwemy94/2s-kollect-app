@@ -24,4 +24,12 @@ class UserRepository extends ResourceRepository {
             ->with('collectors')
             ->Paginate(2);
     }
+
+    public function getAll(){
+        return $this->model->with('roles', 'collectors', 'clients')->get();
+    }
+
+    public function getByPhone($phone){
+        return $this->model->with('roles', 'collectors')->where('phone', $phone)->first();
+    }
 }

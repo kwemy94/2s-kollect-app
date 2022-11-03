@@ -9,7 +9,6 @@ use App\Models\Collector;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
-// use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\ClientRepository;
@@ -36,6 +35,11 @@ class UserController extends Controller
     }
 
     public function store(Request $request, UserValidation $userValidation) {
+        // return response()->json([
+        //     'dd4'=> $request->file('profil_image'),
+        //     'dd2'=> $request->all(),
+        //     // 'dd1'=> type($request->avatar2),
+        // ], 200);
         $validator = Validator::make($request->all(), $userValidation->rules(), $userValidation->message());
 
         if ($validator->fails()) {
@@ -43,10 +47,24 @@ class UserController extends Controller
         } else {
 
             $request['password'] = Hash::make('2s@Kollect');
+
+            #Controle de l'authentification de l'utilisateur
+            if (Auth::user()) {
+                $authUser = Auth::user();
+            } else {
+                if (auth::user()) {
+                    $authUser = auth::user();
+                } else {
+                    return response()->json([
+                        'errors' => "Echec de création (Problème  d'authentification)"
+                    ], 400);
+                }
+            }
             
             $user = $this->userRepository->store($request->all());
 
             if ($user ) {
+                $user->roles()->attach([$request['role_id']]);
                 #user collector
                 if ($request['user_type'] == 1) {
                     $collector = new Collector();
@@ -63,25 +81,25 @@ class UserController extends Controller
                     ], 200);
 
                 }  #user client
-                elseif ($request['user_type'] == 2) {
+                else if ($request['user_type'] == 2) {
                     try {
                         $client = new Client();
                         $client->user_id = $user->id;
                         $client->sector_id = $request['sector'];
                         $client->numero_comptoir = $request['numero_comptoir'];
                         $client->numero_registre_de_commerce = $request['numero_registre_de_commerce'];
-                        $client->created_by = Auth::user()->id;
+                        $client->created_by = $authUser->id;
 
                         $client->save();
-                    } catch (\Throwable $th) {
+                    } catch (Exception $th) {
                         //throw $th;
-                        dd($th);
+                        // dd($th);
                         return response()->json([
-                            'errors' => "erreur client",
+                            'err' => "erreur client",
                             'dd1'=> $request['numero_registre_de_commerce'],
                             'dd2'=> $request['numero_comptoir'],
                             'dd3'=> $request['sector'],
-                            // 'dd4'=> Auth::user()->id,
+                            'dd4'=> $th
                         ], 400);
                     }
                     if ($client) {
@@ -177,7 +195,7 @@ class UserController extends Controller
                     $client->sector_id = $request['sector'];
                     $client->numero_comptoir = $request['num_comptoir'];
                     $client->numero_registre_de_commerce = $request['registre_commerce'];
-                    $client->created_by = 1;  # A remplacer par Auth::user()->id;
+                    $client->created_by = auth::user()->id;  # A remplacer par Auth::user()->id;
 
                     $client->save();
                     if ($client) {
