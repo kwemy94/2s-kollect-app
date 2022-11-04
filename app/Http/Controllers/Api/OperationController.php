@@ -73,7 +73,8 @@ class OperationController extends Controller
 
                     return response()->json([
                         'message' =>"Versement éffectué !",
-                        'clients' => $this->clientRepository->getAll(),
+                        // 'clients' => $this->clientRepository->getAll(),
+                        'clients' => $this->clientRepository->getClientSector($request->sector_id),
                     ], 200);
                  } else {
                     #Débiter le compte
@@ -83,7 +84,8 @@ class OperationController extends Controller
 
                      return response()->json([
                         'message' =>"Retrait éffectué !",
-                        'clients' => $this->clientRepository->getAll(),
+                        // 'clients' => $this->clientRepository->getAll(),
+                        'clients' => $this->clientRepository->getClientSector($request->sector_id),
                     ], 200);
                  }
            }
