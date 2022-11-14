@@ -12,7 +12,7 @@ class UserValidation {
             'password' => 'nullable',
             'cni' => 'required|unique:users',
             'user_type' => 'required|integer',  # 0 pour admin, 1 pour collector, 2 pour client
-            'sector' => '',
+            'sector' => 'required',
             'num_comptoir' => '',
             'registre_commerce' => ''
         ];

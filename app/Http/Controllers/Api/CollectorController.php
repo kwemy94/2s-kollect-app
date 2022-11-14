@@ -13,7 +13,7 @@ class CollectorController extends Controller
     private $userRepository;
 
     public function __construct(CollectorRepository $collectorRepository, UserRepository $userRepository){
-        
+
         $this->collectorRepository = $collectorRepository;
         $this->userRepository = $userRepository;
     }
@@ -29,7 +29,7 @@ class CollectorController extends Controller
 
         try {
             $collector = $this->collectorRepository->getCollector($id);
-        
+
             $this->userRepository->update($collector->user->id, $request->all());
 
             $collector->sectors()->detach();
@@ -42,11 +42,30 @@ class CollectorController extends Controller
                 'message' => 'Oups! Echec de mise à jour des informations du collecteur',
             ], 402);
         }
-        
+
         return response()->json([
             'error' => false,
             'message' => 'Mise à jour effectuée !',
             'collectors'=> $this->collectorRepository->getCollectors(),
         ], 200);
+    }
+
+    public function show($id){
+        $collector = $this->CollectorRepository->getSector($id);
+        dd($collector);
+      /*   if ($sector) {
+            return response()->json([
+                'secteur' => $sector,
+                'clients' => $this->clientRepository->getClientSector($id),
+                'error' => false,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Oups! Secteur introuvable',
+                'error' => true,
+            ], 200);
+        } */
+
+
     }
 }
