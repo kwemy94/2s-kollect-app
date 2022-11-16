@@ -43,6 +43,7 @@ class UserController extends Controller
         //     // 'dd1'=> type($request->avatar2),
         // ], 200);
         $validator = Validator::make($request->all(), $userValidation->rules(), $userValidation->message());
+        
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
@@ -62,7 +63,7 @@ class UserController extends Controller
                     ], 400);
                 }
             }
-            
+
             $user = $this->userRepository->store($request->all());
 
             if ($user ) {
@@ -132,7 +133,7 @@ class UserController extends Controller
                                 'dd'=> $th,
                             ], 400);
                         }
-                        
+
                     } else {
                         return response()->json([
                             'errors' => "Echec de création du client"
