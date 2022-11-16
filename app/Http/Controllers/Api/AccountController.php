@@ -42,4 +42,8 @@ class AccountController extends Controller
             'historique' => $client,
         ], 200);
     }
+
+    public function historiqueClientSecteur() {
+        
+    }
 }

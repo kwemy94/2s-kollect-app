@@ -14,6 +14,6 @@ class OperationRepository extends ResourceRepository {
     }
 
     public function getAll() {
-        return $this->model->with('accounts', 'collector')->get();
+        return $this->model->with('accounts', 'collector')->orderBy('id', 'DESC')->get();
     }
 }

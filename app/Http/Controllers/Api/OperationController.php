@@ -94,4 +94,12 @@ class OperationController extends Controller
 
         }
     }
+
+    public function statistic() {
+        return response()->json([
+            'secteurs' => $this->sectorRepository->getAll(),
+            'clients' => $this->clientRepository->getAll(),
+            'operations' => $this->operationRepository->getAll(),
+        ]);
+    }
 }

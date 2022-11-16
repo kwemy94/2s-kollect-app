@@ -6,11 +6,13 @@ use DB;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\Collector;
+use App\Mail\MessageGoogle;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use App\Repositories\ClientRepository;
 use App\Http\Validation\UserValidation;
 use App\Repositories\CollectorRepository;
@@ -75,8 +77,13 @@ class UserController extends Controller
 
                     $collector->sectors()->attach([$request['sector']]);
 
+                    if ($this->sendMailNotification($request) != 0) {
+                        $errorMail = 'Echec de notification mail';
+                    }
+
                     return response()->json([
                         'message' => 'Collecteur crée !',
+                        'errorMail' => isset($errorMail)? $errorMail : '',
                         'collectors' => $this->collectorRepository->getCollectors(),
                     ], 200);
 
@@ -230,5 +237,22 @@ class UserController extends Controller
             ], 400);
 
         }
+    }
+
+    public function sendMailNotification(Request $request) {
+
+        #1. Validation de la requête
+		// $this->validate($request, [ 'message' => 'bail|required' ]);
+
+		#2. Récupération des utilisateurs
+		// $users = User::all();
+
+		#3. Envoi du mail
+		return Mail::to($request->email)->bcc("grantshell0@gmail.com")
+						->queue(new MessageGoogle($request->all()));
+
+        // toast("Un mail a été envoyé à l'utilisateur crée !");
+
+		// return redirect('/user.index');
     }
 }

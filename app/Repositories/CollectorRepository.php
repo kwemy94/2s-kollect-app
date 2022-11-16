@@ -31,6 +31,6 @@ class CollectorRepository extends ResourceRepository {
 
 
     public function getCollectorByUserId($user_id) {
-        return $this->model->where('user_id', $user_id)->first();
+        return $this->model->with('sectors', 'operations')->where('user_id', $user_id)->first();
     }
 }

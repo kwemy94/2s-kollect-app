@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\CollectorRepository;
 
 class AuthController extends Controller
 {
@@ -12,9 +13,13 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    private $collectorRepository;
+
+    public function __construct(CollectorRepository $collectorRepository)
     {
         $this->middleware('JWT', ['except' => ['login']]);
+
+        $this->collectorRepository = $collectorRepository;
     } # 'auth:api', ['except' => ['login']]
 
     /**
@@ -79,6 +84,7 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => auth()->user(),
+            'collector' => $this->collectorRepository->getCollectorByUserId(auth()->user()->id),
         ]);
     }
 }
