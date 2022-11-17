@@ -48,22 +48,29 @@ class OperationController extends Controller
         } else {
             $account = $this->accountRepository->getById($request['account_id']);
             #Test sur le solde en compte avant débit
-            if ($request['type'] == -1 && $account->account_balance <= $request['amount']) {
+            if (($request['type'] == -1 || $request['type'] == 0) && $account->account_balance <= $request['amount']) {
 
                 return response()->json(['errors' =>"Oups! Solde insuffisant"], 400);
             }
 
             # Remplacer l'id du user de la requête par son id de collecteur (car c'est l'id du user qui est envoyé)
             $collector = $this->collectorRepository->getCollectorByUserId($request->collector_id);
-            // dd($collector);
-            // return response()->json(['errors' =>$collector], 400);
+            
             $request['collector_id'] = $collector->id;
 
-
+            #Reconduction montant
+            if($request['type'] == 0){
+                
+                $this->operationRepository->store($request->all());
+                return response()->json([
+                    'message' =>"Reconduction éffectué !",
+                    'clients' => $this->clientRepository->getClientSector($request->sector_id),
+                ], 200);
+            }
+            
            $operation = $this->operationRepository->store($request->all());
 
-           if ($operation) {
-                
+            if ($operation) {
                 if ($request['type'] == 1) {
                     
                     #Incrémenter le solde du compte
@@ -73,22 +80,22 @@ class OperationController extends Controller
 
                     return response()->json([
                         'message' =>"Versement éffectué !",
-                        // 'clients' => $this->clientRepository->getAll(),
                         'clients' => $this->clientRepository->getClientSector($request->sector_id),
                     ], 200);
-                 } else {
-                    #Débiter le compte
-                    $account->account_balance -= $request['amount'];
+                } else {
+                    if ($request['type'] == -1) {
+                        #Débiter le compte
+                        $account->account_balance -= $request['amount'];
 
-                    $this->accountRepository->update($request['account_id'], $account->toArray());
+                        $this->accountRepository->update($request['account_id'], $account->toArray());
 
-                     return response()->json([
-                        'message' =>"Retrait éffectué !",
-                        // 'clients' => $this->clientRepository->getAll(),
-                        'clients' => $this->clientRepository->getClientSector($request->sector_id),
-                    ], 200);
-                 }
-           }
+                        return response()->json([
+                            'message' =>"Retrait éffectué !",
+                            'clients' => $this->clientRepository->getClientSector($request->sector_id),
+                        ], 200);
+                    }
+                }
+            }
 
            return response()->json(['errors' =>"Echec de l'opération"],400);
 

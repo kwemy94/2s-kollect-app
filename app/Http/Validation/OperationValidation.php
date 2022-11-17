@@ -16,7 +16,7 @@ class OperationValidation {
     public function message() {
         return [
             'type.required' => "Type de l'opération requis",
-            'amount.required' => "Montant de l'opération",
+            'amount.required' => "Montant de l'opération requis",
             // 'amount.double' => 'Montant doit être un nombre',
         ];
     }
