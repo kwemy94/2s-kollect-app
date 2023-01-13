@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use App\Models\Client;
+use PDF;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\Repositories\ClientRepository;
 use App\Repositories\AccountRepository;
 use App\Repositories\CollectorRepository;
+// use Barryvdh\DomPDF\PDF;
 
 class ClientController extends Controller
 {
@@ -132,7 +135,7 @@ class ClientController extends Controller
         
         try{
             $clients = $this->clientRepository->restoreAll();
-            return response()->json(['succes'=>true, 'message'=>$client], 200);
+            return response()->json(['succes'=>true, 'message'=>$clients], 200);
 
         }catch(Exception $e){
             throw new DeleteResourceFailedException(null, null, null, $e);
@@ -150,6 +153,20 @@ class ClientController extends Controller
         }catch(Exception $e){
             return response()->json(['succes'=>false, 'message'=>'echec de la suppression définitive'], 402);
         }
+    }
+
+    public function clientDownload($sector_id=15){
+        $clients = $this->clientRepository->getClientSector($sector_id);
+        $data = [
+            'title' => '2S Kollect App',
+            'date' => date('m/d/Y'),
+            'clients' => $clients,
+        ];
+
+        $pdf = PDF::loadView('download.client_par_secteur', $data)->setPaper('a4', 'landscape')->setWarnings(false);
+    
+        // return $pdf->download('client.pdf');exit
+        return $pdf->stream();
     }
 
 }

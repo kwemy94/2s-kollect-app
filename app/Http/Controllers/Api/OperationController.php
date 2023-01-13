@@ -19,6 +19,7 @@ class OperationController extends Controller
     private $accountRepository;
     private $collectorRepository;
     private $sectorRepository;
+    private $clientRepository;
 
     public function __construct(OperationRepository $operationRepository, 
         AccountRepository $accountRepository, ClientRepository $clientRepository, 

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\Repositories\CollectorRepository;
-use App\Http\Controllers\Controller;
 
 class CollectorController extends Controller
 {
@@ -51,7 +52,7 @@ class CollectorController extends Controller
     }
 
     public function show($id){
-        $collector = $this->CollectorRepository->getSector($id);
+        $collector = $this->collectorRepository->getCollector($id);
         dd($collector);
       /*   if ($sector) {
             return response()->json([

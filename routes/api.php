@@ -81,6 +81,10 @@ Route::group([
     Route::post('/client/update/{id}', [ClientController::class, 'update']);
     Route::post('/client/par-secteur/{id_collector}', [ClientController::class, 'clientParSecteur']);
 
+
+    # download pdf file
+    Route::post('/client-download', [ClientController::class, 'clientDownload']);
+
 });
 
 //delete a specific client

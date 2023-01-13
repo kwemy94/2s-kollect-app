@@ -11,6 +11,10 @@ use App\Repositories\OperationRepository;
 
 class AccountController extends Controller
 {
+    private $accountRepository;
+    private $operationRepository;
+    private $clientRepository;
+    private $collectorRepository;
 
     public function __construct(OperationRepository $operationRepository, 
         AccountRepository $accountRepository, ClientRepository $clientRepository, CollectorRepository $collectorRepository) {

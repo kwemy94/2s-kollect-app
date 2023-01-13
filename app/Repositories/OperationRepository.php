@@ -14,6 +14,8 @@ class OperationRepository extends ResourceRepository {
     }
 
     public function getAll() {
-        return $this->model->with('accounts', 'collector')->orderBy('id', 'DESC')->get();
+
+        # Ne pas changer l'ordre du listing (car l'impact est perceptible au listing bilan)
+        return $this->model->with('accounts', 'collector')->orderBy('id', 'ASC')->get();
     }
 }
