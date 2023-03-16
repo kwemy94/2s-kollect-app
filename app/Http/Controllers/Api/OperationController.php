@@ -32,6 +32,9 @@ class OperationController extends Controller
     }
 
     public function index() {
+
+        toggleDatabase();
+        
         return response()->json([
             'clients' => $this->clientRepository->getAll(),
             'operations' => $this->operationRepository->getAll(),

@@ -88,7 +88,7 @@ class SectorController extends Controller
             return response()->json([
                 'message' => 'Oups! Secteur introuvable',
                 'error' => true,
-            ], 200);
+            ], 400);
         }
         
         

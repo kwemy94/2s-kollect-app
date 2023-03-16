@@ -30,7 +30,7 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request(['email', 'password']);
-
+        // return response()->json([$token = auth()->attempt($credentials)]);
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Email ou mot de passe non correct'], 401);
         }
@@ -84,7 +84,7 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => auth()->user(),
-            'collector' => $this->collectorRepository->getCollectorByUserId(auth()->user()->id),
+            // 'collector' => $this->collectorRepository->getCollectorByUserId(auth()->user()->id),
         ]);
     }
 }

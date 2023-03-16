@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Repositories\ClientRepository;
 use App\Http\Validation\UserValidation;
+use Illuminate\Support\Facades\Storage;
 use App\Repositories\CollectorRepository;
 use Illuminate\Support\Facades\Validator;
 
@@ -51,7 +52,15 @@ class UserController extends Controller
         // ], 200);
         $validator = Validator::make($request->all(), $userValidation->rules(), $userValidation->message());
 
+        // $uploadProfil = $request->file('profil');
 
+        // if ($uploadProfil) {
+        //     $filename = Str::uuid() . '.' . $uploadProfil->getClientOriginalExtension();
+        //     Storage::disk('public')->putFileAs('uploadProfil/', $uploadProfil, $filename);
+
+        //     $request['avatar'] = $filename;
+        // }
+        
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         } else {
@@ -68,6 +77,16 @@ class UserController extends Controller
             $result = 0;
 
             DB::transaction(function () use ($request, $authUser, $result) {
+
+                $uploadProfil = $request->file('profil');
+
+                if ($uploadProfil) {
+                    $filename = Str::uuid() . '.' . $uploadProfil->getClientOriginalExtension();
+                    Storage::disk('public')->putFileAs('uploadProfil/', $uploadProfil, $filename);
+
+                    $request['avatar'] = $filename;
+                }
+
                 $user = $this->userRepository->store($request->all());
 
                 # if user saved
@@ -83,7 +102,7 @@ class UserController extends Controller
 
                     $collector->sectors()->attach([$request['sector']]);
 
-                    if ($this->sendMailNotification($request) != 0) {
+                    if (sendMailNotification($request) != 0) {
                         $errorMail = 'Echec de notification mail';
                     }
 
@@ -332,21 +351,4 @@ class UserController extends Controller
         }
     }
 
-    public function sendMailNotification(Request $request)
-    {
-
-        #1. Validation de la requête
-        // $this->validate($request, [ 'message' => 'bail|required' ]);
-
-        #2. Récupération des utilisateurs
-        // $users = User::all();
-
-        #3. Envoi du mail
-        return Mail::to($request->email)->bcc("grantshell0@gmail.com")
-            ->queue(new MessageGoogle($request->all()));
-
-        // toast("Un mail a été envoyé à l'utilisateur crée !");
-
-        // return redirect('/user.index');
-    }
 }

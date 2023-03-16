@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\SectorController;
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\CollectorController;
 use App\Http\Controllers\Api\OperationController;
+use App\Http\Controllers\Brivael\EtablissementController;
 // use App\Http\Controllers\Api\ClientController;
 
 /*
@@ -37,7 +38,7 @@ Route::post('/client-update-{id}',[UserController::class, 'update']);
 // Route::post('/operation-store', [OperationController::class, 'store']);
 
 
-
+Route::post('/etablissement', [EtablissementController::class, 'store']);
 
 Route::group([
 
@@ -67,6 +68,7 @@ Route::group([
 
     # Collector
     Route::post('/collectors', [CollectorController::class, 'index']);
+    Route::post('/collector-store', [CollectorController::class, 'store']);
     Route::post('/collector/update/{id}', [CollectorController::class, 'update']);
     Route::post('/sector/show/{id}', [CollectorController::class, 'show'])->name('collector.show');
 
@@ -77,6 +79,7 @@ Route::group([
 
     # client zone
     Route::post('/client', [ClientController::class, 'index']);
+    Route::post('/client-store', [ClientController::class, 'store']);
     Route::post('/client/delete/{id}', [ClientController::class, 'delete']);
     Route::post('/client/update/{id}', [ClientController::class, 'update']);
     Route::post('/client/par-secteur/{id_collector}', [ClientController::class, 'clientParSecteur']);
@@ -84,6 +87,7 @@ Route::group([
 
     # download pdf file
     Route::post('/client-download', [ClientController::class, 'clientDownload']);
+    Route::post('/client-download-history/{id}', [ClientController::class, 'downloadCustomerHistory']);
 
 });
 

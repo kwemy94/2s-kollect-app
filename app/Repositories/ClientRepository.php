@@ -3,14 +3,18 @@
 namespace App\Repositories;
 
 use App\Models\Client;
+use Illuminate\Support\Facades\Auth;
 
 class ClientRepository extends ResourceRepository {
 
     /**
      * @param Client $client
      */
-    public function __construct(Client $client) {
+
+     private $collectorRepository;
+    public function __construct(Client $client, CollectorRepository $collectorRepository) {
         $this->model = $client;
+        $this->collectorRepository = $collectorRepository;
     }
 
     public function getAll() {
@@ -36,7 +40,14 @@ class ClientRepository extends ResourceRepository {
         return $this->model->find($id)->forceDelete();
     }
 
-    public function getClientSector($sectorId) {
+    public function getClientSector($sectorId=0) {
+        // return response()->json(['result'=> Auth::user()->collectors, 'status'=>is_null($sectorId)],200);
+        if($sectorId == 0){
+            $collecteur = Auth::user();
+            return response()->json(['result'=> $collecteur],200);
+            // dd('icciii', $collecteur);
+            // dd($this->collectorRepository ->getById($collecteur->id));
+        }
         return $this->model->with('user', 'sector', 'accounts')->where('sector_id', $sectorId)->get();
     }
 
