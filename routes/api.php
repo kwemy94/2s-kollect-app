@@ -38,7 +38,7 @@ Route::post('/client-update-{id}',[UserController::class, 'update']);
 // Route::post('/operation-store', [OperationController::class, 'store']);
 
 
-Route::post('/etablissement', [EtablissementController::class, 'store']);
+Route::post('/etablissement-store', [EtablissementController::class, 'store']);
 
 Route::group([
 
@@ -46,6 +46,9 @@ Route::group([
     'prefix' => 'auth'
 
 ], function ($router) {
+    #Etablissement
+    Route::get('/etablissement', [EtablissementController::class, 'index']);
+
     #Operation
     Route::post('/operation-store', [OperationController::class, 'store']);
     Route::post('/operation', [OperationController::class, 'index']);

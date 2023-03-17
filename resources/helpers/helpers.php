@@ -81,7 +81,7 @@ if (!function_exists('toggleDatabase')) {
                 $connection = \DB::connection('mobility');
                 Config::set('database.default', $connection->getName());
             else:
-                dd('test2');
+                // dd('test2');
                 $connection = null;
             endif;
         } else {

@@ -5,18 +5,18 @@ class EtablissementValidation {
 
     public function rules() {
       return   [
-            'name' => 'required|min:3',
-            'email' => 'required|email',
+            'ets_name' => 'required|min:3',
+            'ets_email' => 'required|email',
         ];
     }
 
 
     public function message() {
         return [
-            'name.required' => 'le nom est requis',
-            'name.min' => 'le nom doit avoir au moins 3 caractères',
-            'email.required' => 'Adresse email obligatoire',
-            'email.email' => 'Mauvaise adresse email',
+            'ets_name.required' => 'le nom est requis',
+            'ets_name.min' => 'le nom doit avoir au moins 3 caractères',
+            'ets_email.required' => 'Adresse email obligatoire',
+            'ets_email.email' => 'Mauvaise adresse email',
         ];
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Etablissement extends Model
 {
     use HasFactory;
+    // protected $protected = ['ets_name', 'ets_email', 'settings'];
     protected $guarded = ['id'];
 
     public function users() {

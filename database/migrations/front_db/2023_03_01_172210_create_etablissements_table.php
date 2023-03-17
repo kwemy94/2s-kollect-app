@@ -15,8 +15,8 @@ class CreateEtablissementsTable extends Migration
     {
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50); 
-            $table->string('email', 60);
+            $table->string('ets_name', 50); 
+            $table->string('ets_email', 60);
             $table->tinyInteger('status')->nullable();
             $table->string('domain', 60)->nullable();
             $table->string('website', 60)->nullable();
@@ -26,7 +26,7 @@ class CreateEtablissementsTable extends Migration
             $table->string('country', 50)->nullable();
             $table->string('region', 50)->nullable();
             $table->string('city', 50)->nullable();
-            $table->string('phone', 50)->nullable();
+            $table->string('ets_phone', 50)->nullable();
             $table->string('logo', 50)->nullable();
             $table->text('settings')->nullable();
             $table->string('taxpayer_number', 100)->nullable()->unique('taxpayer_number');
