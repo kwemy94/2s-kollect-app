@@ -17,13 +17,13 @@ class EtablissementRepository extends ResourceRepository {
         return $this->model
             ->where('status', $status)
             //->orderBy('created_at', 'asc')
-            ->orderBy('name', 'asc')
+            ->orderBy('ets_name', 'asc')
             ->get();
     }
     public function lastField() {
         toggleDatabase(false);
         return $this->model
-            ->orderBy('name', 'asc')
+            ->orderBy('ets_name', 'asc')
             ->where('status',2)
             ->latest()
             ->first();
@@ -40,21 +40,21 @@ class EtablissementRepository extends ResourceRepository {
     public function getOne($status = 1) {
         return $this->model
             ->where('status', $status)
-            ->orderBy('name', 'asc')
+            ->orderBy('ets_name', 'asc')
             ->first();
     }
 
 
-    public function store($inputs) {
+    public function storeEts($request, $settings) {
         
         $etab = new Etablissement();
-        $etab->name = $inputs['name'];
-        $etab->email = $inputs['email'];
+        $etab->ets_name = $request['ets_name'];
+        $etab->ets_email = $request['ets_email'];
         $etab->status = 2;
-        $etab->settings = json_encode($inputs['settings']);
+        $etab->settings = json_encode($settings);
         $etab->save();
 
-        return 0;
+        return $etab;
     }
 
     

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Brivael;
 
+use App\Jobs\SendMailJob;
 use App\Repositories\RoleRepository;
 use PHPUnit\Util\Json;
 use Illuminate\Support\Str;
@@ -90,12 +91,12 @@ class EtablissementController extends Controller
 
                 $data =  array("db" => array('database'=>$database,'username'=>'root','password'=>''),'momo'=> '{}');
 
-                $etab['ets_name'] = $request->ets_name;
-                $etab['ets_email'] = $request->ets_email;
-                $etab['settings'] = $data;
+                // $etab['ets_name'] = $request->ets_name;
+                // $etab['ets_email'] = $request->ets_email;
+                // $etab['settings'] = $data;
                 
-               $etablissement = $this->etablissementRepository->store($etab);
-
+               $etablissement = $this->etablissementRepository->storeEts($request, $data);
+                // dd($etablissement);
                # Création de l'admin de l'établissement
                 $admin_user['etablissement_id'] = $etablissement->id;
                 $admin_user = $this->userRepository->store($admin_user);
@@ -112,11 +113,15 @@ class EtablissementController extends Controller
                 Artisan::call('update:backend_db', ['path'=> 'backend_db']);
 
                 Artisan::call('db:seed', ['--class' => 'RoleSeeder']);
+
+                // SendMailJob::dispatch($request);
+                \sendMailNotification($request);
             }
             
             
         } catch (\Throwable $th) {
             //throw $th;
+            // dd($admin_user);
             return response()->json(['error'=> 'erreur survenue '.$th->getMessage()]);
         }
 
