@@ -21,12 +21,12 @@ class CollectorRepository extends ResourceRepository {
 
     public function getCollectors() {
         return $this->model
-            ->with('user', 'sectors')
+            ->with( 'sectors')
             ->get();
     }
 
     public function getCollector($id) {
-        return $this->model->with('user', 'sectors')->findOrFail($id);
+        return $this->model->with( 'sectors')->findOrFail($id);
     }
 
 

@@ -69,15 +69,13 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+    // public function clients(){
+    //     return $this->hasMany(Client::class);
+    // }
 
-
-    public function clients(){
-        return $this->hasMany(Client::class);
-    }
-
-    public function collectors(){
-        return $this->hasMany(Collector::class);
-    }
+    // public function collectors(){
+    //     return $this->hasMany(Collector::class);
+    // }
 
     public function roles (){
         return $this->belongsToMany(Role::class);
@@ -85,5 +83,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function etablissement(){
         return $this->belongsTo(Etablissement::class);
+    }
+
+    public function permissions(){
+        return $this->belongsToMany(Permission::class);
     }
 }

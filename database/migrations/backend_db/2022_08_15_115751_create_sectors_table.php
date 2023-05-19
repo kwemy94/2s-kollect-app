@@ -17,6 +17,7 @@ class CreateSectorsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('locality');
+            $table->unsignedBigInteger('collector_id');
             $table->timestamps();
         });
     }

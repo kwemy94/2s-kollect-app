@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
@@ -17,31 +18,57 @@ class SectorController extends Controller
     private $sectorRepository;
     private $clientRepository;
     private $roleRepository;
+    private $userRepository;
 
     public function __construct(SectorRepository $sectorRepository, 
-    ClientRepository $clientRepository, RoleRepository $roleRepository){
+    ClientRepository $clientRepository, RoleRepository $roleRepository, UserRepository $userRepository){
         $this->sectorRepository = $sectorRepository;
         $this->clientRepository = $clientRepository;
         $this->roleRepository = $roleRepository;
+        $this->userRepository = $userRepository;
     }
 
-    public function index(){
+    public function index(Request $request){
+        // dd(is_null($request->bearerToken()));
+        $collectors = $this->userRepository->getCollectors();
+        toggleDatabase();
         return response()->json([
             'secteurs' => $this->sectorRepository->getAll(),
-            'roles' => $this->roleRepository->getAll(),
+            'collectors' => $collectors,
+            // 'roles' => $this->roleRepository->getAll(),
         ], 200);
     }
 
 
     public function store(Request $request, SectorValidation $sectorValidation) {
         // return response()->json(JWTAuth::user());
+        toggleDatabase(true);
 
         $validator = Validator::make($request->all(), $sectorValidation->rules(), $sectorValidation->message());
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+            return response()->json(['errors' => $validator->errors()->all()], 400);
         } else {
-            $this->sectorRepository->store($request->all());
+
+            try {
+               $sector = $this->sectorRepository->store($request->all());
+            } catch (\Throwable $th) {
+                //throw $th;
+                return response()->json(['errors' => $th->getMessage(), ]);
+            }
+
+            if (!is_null($sector)) {
+                try {
+                    toggleDatabase(false);
+                    $this->userRepository->update($request->collector_id, ['sector_id'=> $sector->id]);
+                } catch (\Throwable $th) {
+                    //throw $th;
+                    return response()->json(['errors' => $th->getMessage(), ]);
+                }
+            }
+
+            toggleDatabase();
+            
             return response()->json([
                 'message' =>"Secteur créer",
                 'secteurs' => $this->sectorRepository->getAll()
@@ -50,27 +77,36 @@ class SectorController extends Controller
 
     }
 
-    public function update(Request $request,$id,SectorValidation $sectorValidation){
-        $validator = Validator::make($request->all(), $sectorValidation->rules(), $sectorValidation->message());
+    public function update(Request $request,$id){
+        toggleDatabase();
+        // $validator = Validator::make($request->all(), $sectorValidation->rules(), $sectorValidation->message());
 
         $inputs = $request->all();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        } else {
-            if($inputs){
+        if($inputs){
 
-                $this->sectorRepository->update($id,$inputs);
-                return response()->json([
-                    'message' =>"Secteur mis à jour",
-                    'secteurs' => $this->sectorRepository->getAll(),
-                ], 200);
+            $sector = $this->sectorRepository->update($id,$inputs);
+
+            if ($sector) { 
+                // dd($sector);
+                try {
+                    toggleDatabase(false);
+                    $this->userRepository->update($request->collector_id, ['sector_id'=> $id]);
+                } catch (\Throwable $th) {
+                    //throw $th;
+                    return response()->json(['errors' => $th->getMessage(), ]);
+                }
+                toggleDatabase();
             }
-          else{
             return response()->json([
-                'message' =>"Echec de mise à jour du secteur",
-            ], 402);
-          }
+                'message' =>"Secteur mis à jour",
+                'secteurs' => $this->sectorRepository->getAll(),
+            ], 200);
+        }
+        else{
+        return response()->json([
+            'message' =>"Echec de mise à jour du secteur",
+        ], 402);
         }
 
     }
@@ -96,6 +132,7 @@ class SectorController extends Controller
 
     public function destroy($id) {
         
+        toggleDatabase();
         try {
             $this->sectorRepository->destroy($id);
         } catch (\Throwable $th) {

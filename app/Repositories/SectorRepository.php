@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Sector;
+use App\Models\Backend\Sector;
 
 class SectorRepository extends ResourceRepository {
 
@@ -15,7 +15,7 @@ class SectorRepository extends ResourceRepository {
 
     public function getAll(){
         return $this->model
-            ->with('collectors', 'clients')
+            ->with('clients')
             ->orderBy('id', 'DESC')    
             ->get();
     }

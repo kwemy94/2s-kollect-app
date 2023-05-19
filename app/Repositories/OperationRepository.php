@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Operation;
+use App\Models\Backend\Operation;
 
 class OperationRepository extends ResourceRepository
 {
@@ -19,7 +19,7 @@ class OperationRepository extends ResourceRepository
     {
 
         # Ne pas changer l'ordre du listing (car l'impact est perceptible au listing bilan)
-        return $this->model->with('accounts', 'collector')->orderBy('id', 'ASC')->get();
+        return $this->model->with('accounts')->orderBy('id', 'ASC')->get();
     }
 
     public function getCustomerHisto($req, $account_id)

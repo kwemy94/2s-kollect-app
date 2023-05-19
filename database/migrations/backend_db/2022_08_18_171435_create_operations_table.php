@@ -19,8 +19,8 @@ class CreateOperationsTable extends Migration
             $table->unsignedBigInteger('account_id');
             $table->String('type');
             $table->double('amount');
+            $table->double('remaining_balance')->nullable();
             $table->string('reason_operation',30)->nullable();
-            $table->foreign(['collector_id'], 'FK_collector_id')->references(['id'])->on('collectors');
             $table->foreign('account_id')->references(['id'])->on('accounts');
             $table->timestamps();
         });

@@ -9,6 +9,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserRepository extends ResourceRepository {
 
@@ -19,17 +20,22 @@ class UserRepository extends ResourceRepository {
         $this->model = $user;
     }
 
-    public function getCollectors() {
-        return $this->model
-            ->with('collectors')
-            ->Paginate(2);
-    }
+    public function getCollectors() { # en cours de reflexion
+        return  $this->model
+          ->where('etablissement_id', Auth::user()->etablissement_id)
+          ->where('sector_id', null)
+          ->where('id','!=', Auth::user()->id)
+          ->get();
+      }
 
     public function getAll(){
         return $this->model->with('roles', 'collectors', 'clients')->get();
     }
 
-    public function getByPhone($phone){
-        return $this->model->with('roles', 'collectors')->where('phone', $phone)->first();
+    public function getBySector($sectorId){
+        return $this->model->with('roles',)->where('sector_id', $sectorId)->first();
+    }
+    public function getById($id){
+        return $this->model->with('roles')->where('id', $id)->first();
     }
 }

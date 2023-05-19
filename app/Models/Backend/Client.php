@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Backend;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,9 +16,9 @@ class Client extends Model
         return $this->hasMany(Account::class);
     }
 
-    public function user(){
-        return $this->belongsTo(User::class);
-    }
+    // public function user(){
+    //     return $this->belongsTo(User::class);
+    // }
 
     public function sector(){
         return $this->belongsTo(Sector::class);

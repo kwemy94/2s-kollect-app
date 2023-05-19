@@ -23,13 +23,14 @@ class CollectorController extends Controller
 
     public function __construct(CollectorRepository $collectorRepository, UserRepository $userRepository)
     {
-
+        // $this->middleware('JWT');
         $this->collectorRepository = $collectorRepository;
         $this->userRepository = $userRepository;
     }
 
     public function index()
     {
+        toggleDatabase(true);
         $clients = $this->collectorRepository->getCollectors();
 
         return response()->json(['collectors' => $clients], 200);
@@ -38,6 +39,7 @@ class CollectorController extends Controller
     public function store(Request $request, UserValidation $userValidation)
     {
 
+        toggleDatabase(true);
         $validator = Validator::make($request->all(), $userValidation->rules(), $userValidation->message());
 
         if ($validator->fails()) {
@@ -100,6 +102,7 @@ class CollectorController extends Controller
     public function update(Request $request, $id)
     {
 
+        toggleDatabase(true);
         try {
             $collector = $this->collectorRepository->getCollector($id);
 

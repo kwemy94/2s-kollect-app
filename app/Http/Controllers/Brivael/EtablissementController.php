@@ -78,7 +78,7 @@ class EtablissementController extends Controller
             $admin_user['password'] = Hash::make('2s@Kollect');
             
 
-           $transaction = DB::transaction(function () use($request, &$admin_user, &$database, $uploadProfil){
+            $transaction = DB::transaction(function () use($request, &$admin_user, &$database, $uploadProfil){
                 if ($uploadProfil) {
                     $filename = Str::uuid() . '.' . $uploadProfil->getClientOriginalExtension();
                     Storage::disk('public')->putFileAs('etablissement/logo/', $uploadProfil, $filename);
@@ -86,33 +86,35 @@ class EtablissementController extends Controller
                     $request['logo'] = $filename;
                 }
 
-
-                $database = '2s_'.$request->name.'_db';
+                $ets_name =  explode(" ",trim($request->name));
+                $db_ets = '';
+                for ($i=0; $i < count($ets_name); $i++) { 
+                    $db_ets = $db_ets.$ets_name[$i];
+                }
+                
+                $database = '2s_'.$db_ets.'_db';
 
                 $data =  array("db" => array('database'=>$database,'username'=>'root','password'=>''),'momo'=> '{}');
-
-                // $etab['ets_name'] = $request->ets_name;
-                // $etab['ets_email'] = $request->ets_email;
-                // $etab['settings'] = $data;
                 
                $etablissement = $this->etablissementRepository->storeEts($request, $data);
-                // dd($etablissement);
+
                # Création de l'admin de l'établissement
                 $admin_user['etablissement_id'] = $etablissement->id;
                 $admin_user = $this->userRepository->store($admin_user);
-                $role = $this->roleRepository->getRoot();
+                $role = $this->roleRepository->getRole();
                 $admin_user->roles()->attach([$role->id]);
 
             });
 
             #Mettre le contenu ci-dessous dans un job + envoi de mail
             if (is_null($transaction)) {
+                # Creation de la bd
                 Artisan::call('db:create', ['name'=> $database]);
                 
                 # Exécution des migrations dans les bases de données nouvellement crées
                 Artisan::call('update:backend_db', ['path'=> 'backend_db']);
 
-                Artisan::call('db:seed', ['--class' => 'RoleSeeder']);
+                // Artisan::call('db:seed', ['--class' => 'RoleSeeder']);
 
                 // SendMailJob::dispatch($request);
                 \sendMailNotification($request);

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Auth;
 use PDF;
 use Exception;
-use App\Models\Client;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\Backend\Client;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\ClientRepository;
 use App\Repositories\SectorRepository;
@@ -38,7 +38,7 @@ class ClientController extends Controller
         SectorRepository $sectorRepository, OperationRepository $operationRepository
     )
     {
-
+        // $this->middleware('JWT');
         $this->clientRepository = $clientRepository;
         $this->userRepository = $userRepository;
         $this->accountRepository = $accountRepository;
@@ -49,7 +49,9 @@ class ClientController extends Controller
 
     public function index()
     {
-        $clients = $this->clientRepository->getClientSector(null);
+        toggleDatabase(true);
+        $clients = $this->clientRepository->getClientSector();
+        // $clients = [];
         return response()->json(['clients' => $clients], 200);
     }
 
@@ -61,6 +63,8 @@ class ClientController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
+        
+        toggleDatabase();
 
         $uploadProfil = $request->file('profil');
 
@@ -75,56 +79,39 @@ class ClientController extends Controller
         $request['password'] = Hash::make('2s@Client');
         $error = false;
 
-        DB::transaction(function () use ($filename, $error, $uploadProfil, $request) {
-            try {
+        $inputs = $request->post();
+
+        try {
+            DB::transaction(function () use ($filename, $inputs, $error, $uploadProfil, $request) {
                 if (!is_null($filename)) {
-                    Storage::disk('public')->putFileAs('uploadProfil/', $uploadProfil, $filename);
-                    $request['avatar'] = $filename;
+                    Storage::disk('public')->putFileAs('profil/clients/', $uploadProfil, $filename);
+                    $inputs['avatar'] = $filename;
                 }
 
-                $user = $this->userRepository->store($request->all());
+                $client = $this->clientRepository->store($inputs);
 
-                $client = new Client();
-                $client->user_id = $user->id;
-                $client->sector_id = $request['sector'];
-                $client->numero_comptoir = $request['numero_comptoir'];
-                $client->numero_registre_de_commerce = $request['numero_registre_de_commerce'];
-                $client->created_by = Auth::user()->id;
-
-                $client->save();
-            } catch (Exception $th) {
-                //throw $th;
-                // dd($th);
-                // return response()->json([
-                //     'err' => "erreur client",
-                //     'dd1' => $request['numero_registre_de_commerce'],
-                //     'dd2' => $request['numero_comptoir'],
-                //     'dd3' => $request['sector'],
-                //     'dd4' => $th->getMessage(),
-                // ], 400);
-                $error = $th->getMessage();
-            }
-
-            try {
                 $account = array();
                 $account['client_id'] = $client->id;
-                $account['account_title'] = $user->name;
+                $account['account_title'] = $client->name;
                 $account['account_number'] = date('Y') . substr(time(), -5) . '-' . substr(time(), -2) + 2;
                 $account['account_balance'] = 0;
                 $account['created_at'] = date("Y-n-j G:i:s");
                 $account['updated_at'] = date("Y-n-j G:i:s");
 
                 DB::table('accounts')->insert($account);
-                
-            } catch (\Throwable $th) {
-                //throw $th;
-                // return response()->json([
-                //     'errors' => "erreur compte",
-                //     'dd' => $th,
-                // ], 400);
-                $error = $th->getMessage();
-            }
-        });
+            });
+        } catch (Exception $th) {
+            //throw $th;
+            // dd($th);
+            // return response()->json([
+            //     'err' => "erreur client",
+            //     'dd1' => $request['numero_registre_de_commerce'],
+            //     'dd2' => $request['numero_comptoir'],
+            //     'dd3' => $request['sector'],
+            //     'dd4' => $th->getMessage(),
+            // ], 400);
+            $error = $th->getMessage();
+        }
 
         if ($error != false) {
             return response()->json([
@@ -135,62 +122,62 @@ class ClientController extends Controller
 
         return response()->json([
             'message' => 'Client crée !',
-            'clients' => $this->clientRepository->getClientSector($request->sector),
+            'clients' => $this->clientRepository->getClientSector($request->sector_id),
         ], 201);
     }
 
-    public function clientParSecteur($phone)
+    public function clientParSecteur($sectorId)
     {
-        // $clients = $this->clientRepository->getClientSector();
-        $user = $this->userRepository->getByPhone($phone);
-        if ($user->collectors) {
-            $collectorId = $user->collectors[0]->id;
-        } else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Oups! Collecteur non existant',
-            ], 400);
-        }
-        // return response()->json(['clients' => $collectorId],200);
-        $collector = $this->collectorRepository->getCollector($collectorId);
+        toggleDatabase();
+        $clients = $this->clientRepository->getClientSector($sectorId);
 
-        if ($collector->sectors) {
-            $sector_id = $collector->sectors[0]->pivot->sector_id;
-        } else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Oups! Secteur non existant',
-            ], 400);
-        }
-
-        $clients = $this->clientRepository->getClientSector($sector_id);
         return response()->json(['clients' => $clients], 200);
     }
 
 
     public function update(Request $request, $id)
     {
-
-
+        toggleDatabase();
+        $inputs = $request->post();
         try {
+
             $client = $this->clientRepository->getClient($id);
 
-            $this->userRepository->update($client->user->id, $request->all());
+            DB::transaction(function() use($inputs, $client, $request) {
 
-            $this->clientRepository->update($client->id, $request->all());
+                $uploadProfil = $request->file('profil');
 
-            // return response()->json($this->clientRepository->getClient($id));
+                if ($uploadProfil) {
+                    $filename = Str::uuid() . '.' . $uploadProfil->getClientOriginalExtension();
 
-            $account = null;
-            foreach ($client->accounts as $compt) {
-                $account = $compt;
-                break; # En supposant que l'utilisateur à 1 seul compte
-            }
+                    #Supprimer l'ancien fichier
+                    if (!is_null($client->avatar) ) {
+                        $path = public_path().'/storage/profil/clients/';
+                        $file_old = $path.$client->avatar;
+                        unlink($file_old);
+                    }
+                    Storage::disk('public')->putFileAs('profil/clients/', $uploadProfil, $filename);
+                    $inputs['avatar'] = $filename;
+                    
+                } else {
+                    $filename = null;
+                }
 
-            $this->accountRepository->update($account->id, ['account_title' => $request->name]);
+                $this->clientRepository->update($client->id, $inputs);
+
+                $account = null;
+                foreach ($client->accounts as $compt) {
+                    $account = $compt;
+                    break; # En supposant que l'utilisateur à 1 seul compte
+                }
+
+                $this->accountRepository->update($account->id, ['account_title' => $inputs['name']]);
+            });
+
         } catch (\Throwable $th) {
             return response()->json([
                 'error' => true,
+                'dd' => $th->getMessage(),
                 'message' => 'Oups! Echec de mise à jour des informations du client',
             ], 402);
         }
@@ -198,25 +185,25 @@ class ClientController extends Controller
         return response()->json([
             'error' => false,
             'message' => 'Mise à jour effectuée !',
-            'clients' => $this->clientRepository->getAll(),
+            'clients' => $this->clientRepository->getClientSector($client->sector_id),
         ], 200);
 
 
     }
 
 
-    public function delete($id)
+    public function destroy($id)
     {
-
-
+        toggleDatabase();
         try {
+            $info = $this->clientRepository->getById($id);
 
             $client = $this->clientRepository->destroy($id);
 
             return response()->json([
                 'success' => true,
                 'message' => 'client supprimé !',
-                'clients' => $this->clientRepository->getAll(),
+                'clients' => $this->clientRepository->getClientSector($info->sector_id),
             ], 200);
         } catch (Exception $e) {
 
@@ -268,8 +255,9 @@ class ClientController extends Controller
         }
     }
 
-    public function clientDownload($sector_id = 36)
+    public function clientDownload($sector_id)
     {
+        toggleDatabase();
         $clients = $this->clientRepository->getClientSector($sector_id);
         $sector = $this->sectorRepository->getById($sector_id);
         $data = [

@@ -63,7 +63,7 @@ Route::group([
     Route::post('me', [AuthController::class, 'me']);
 
     # sector
-    Route::get('/sector', [SectorController::class, 'index']);
+    Route::post('/sector', [SectorController::class, 'index']);
     Route::post('/sector-store', [SectorController::class, 'store']);
     Route::post('/sector-update-{id}', [SectorController::class, 'update']);
     Route::post('/sector/show/{id}', [SectorController::class, 'show']);
@@ -83,13 +83,13 @@ Route::group([
     # client zone
     Route::post('/client', [ClientController::class, 'index']);
     Route::post('/client-store', [ClientController::class, 'store']);
-    Route::post('/client/delete/{id}', [ClientController::class, 'delete']);
+    Route::post('/client/delete/{id}', [ClientController::class, 'destroy']);
     Route::post('/client/update/{id}', [ClientController::class, 'update']);
     Route::post('/client/par-secteur/{id_collector}', [ClientController::class, 'clientParSecteur']);
 
 
     # download pdf file
-    Route::post('/client-download', [ClientController::class, 'clientDownload']);
+    Route::post('/client-download/{sectorId}', [ClientController::class, 'clientDownload']);
     Route::post('/client-download-history/{id}', [ClientController::class, 'downloadCustomerHistory']);
 
 });

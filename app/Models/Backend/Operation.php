@@ -1,17 +1,21 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Backend;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Commission extends Model
+class Operation extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
 
-    public function account(){
+    public function accounts(){
         return $this->belongsTo(Account::class);
     }
+
+    // public function collector(){
+    //     return $this->belongsTo(Collector::class);
+    // }
 }

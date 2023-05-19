@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\CollectorRepository;
 
@@ -14,12 +15,14 @@ class AuthController extends Controller
      * @return void
      */
     private $collectorRepository;
+    private $userRepository;
 
-    public function __construct(CollectorRepository $collectorRepository)
+    public function __construct(CollectorRepository $collectorRepository, UserRepository $userRepository)
     {
         $this->middleware('JWT', ['except' => ['login']]);
 
         $this->collectorRepository = $collectorRepository;
+        $this->userRepository = $userRepository;
     } # 'auth:api', ['except' => ['login']]
 
     /**
@@ -79,12 +82,17 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+        $userAuth = $this->userRepository->getById(auth()->user()->id);
+        // toggleDatabase(true);
+        // $collector = $this->collectorRepository->getCollectorByUserId(auth()->user()->id);
+
+        toggleDatabase(false);
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user(),
-            // 'collector' => $this->collectorRepository->getCollectorByUserId(auth()->user()->id),
+            'user' => $userAuth,
+            // 'collector' => $collector,
         ]);
     }
 }

@@ -17,9 +17,9 @@ class RoleRepository extends ResourceRepository {
         return $this->model->with('users')->get();
     }
 
-    public function getRoot() {
+    public function getRole($role='root') {
         return $this->model
-            ->where('name', 'root')
+            ->where('name', $role)
             ->first();
     }
 }

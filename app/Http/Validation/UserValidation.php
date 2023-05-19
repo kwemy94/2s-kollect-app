@@ -11,8 +11,8 @@ class UserValidation {
             'email' => 'required|email|unique:users',
             'password' => 'nullable',
             'cni' => 'required|unique:users',
-            'user_type' => 'required|integer',  # 0 pour admin, 1 pour collector, 2 pour client
-            'sector' => 'required',
+            // 'user_type' => 'required|integer',  # 0 pour admin, 1 pour collector, 2 pour client
+            'sector' => 'nullable',
             'num_comptoir' => '',
             'registre_commerce' => ''
         ];

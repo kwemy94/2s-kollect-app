@@ -8,29 +8,34 @@
     <title>Liste des clients secteur de {{ $sector->name }} </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        table,th,td {
+        table,
+        th,
+        td {
             border: 1px solid #9b9494cc;
-            
+
         }
 
         table {
             border-collapse: collapse;
             width: 100%;
         }
-        td,th {
+
+        td,
+        th {
             border-bottom: 1px solid #9b9494cc;
         }
+
         th {
             height: 5%;
             background-color: #0dcaf0;
             color: white;
         }
-        td{
+
+        td {
             text-align: left
         }
-        tr{
 
-        }
+        tr {}
 
         .title-sector,
         .app-name {
@@ -61,9 +66,9 @@
         @foreach ($clients as $client)
             <tr>
                 <td>{{ $id++ }} </td>
-                <td>{{ $client->user->name }} </td>
-                <td>{{ $client->user->phone }} </td>
-                <td>{{ $client->accounts[0]->accont_number }} </td>
+                <td>{{ $client->name }} </td>
+                <td>{{ $client->phone }} </td>
+                <td>{{ $client->accounts[0]->account_number }} </td>
                 <td>{{ $client->accounts[0]->account_balance }} </td>
                 <td>{{ $client->numero_comptoir }} </td>
             </tr>

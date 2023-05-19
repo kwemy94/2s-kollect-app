@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Account;
+use App\Models\Backend\Account;
 
 class AccountRepository extends ResourceRepository {
 

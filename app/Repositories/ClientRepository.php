@@ -2,8 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\Client;
+use App\Models\Backend\Client;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\CollectorRepository;
 
 class ClientRepository extends ResourceRepository {
 
@@ -18,11 +19,11 @@ class ClientRepository extends ResourceRepository {
     }
 
     public function getAll() {
-        return $this->model->with('user', 'sector', 'accounts')->orderBy('id', 'DESC')->get();
+        return $this->model->with('sector', 'accounts')->orderBy('id', 'DESC')->get();
     }
 
     public function getClient($id) {
-        return $this->model->with('user', 'accounts', 'sector')->findOrfail($id);
+        return $this->model->with( 'accounts', 'sector')->findOrfail($id);
     }
 
     public function restore($id){
@@ -40,20 +41,14 @@ class ClientRepository extends ResourceRepository {
         return $this->model->find($id)->forceDelete();
     }
 
-    public function getClientSector($sectorId=0) {
-        // return response()->json(['result'=> Auth::user()->collectors, 'status'=>is_null($sectorId)],200);
-        if($sectorId == 0){
-            $collecteur = Auth::user();
-            return response()->json(['result'=> $collecteur],200);
-            // dd('icciii', $collecteur);
-            // dd($this->collectorRepository ->getById($collecteur->id));
-        }
-        return $this->model->with('user', 'sector', 'accounts')->where('sector_id', $sectorId)->get();
+    public function getClientSector($sectorId) {
+        
+        return $this->model->where('sector_id', $sectorId)->with( 'sector', 'accounts')->orderBy('id', 'desc')->get();
     }
 
     
     public function getClientSector2($sectorId) {
-        $user = $this->model->with('user', 'sector', 'accounts')->where('sector_id', $sectorId)->get();
+        $user = $this->model->with( 'sector', 'accounts')->where('sector_id', $sectorId)->get();
 
 
         // $user = $this->userRepository->getByPhone($phone);
